@@ -30,3 +30,5 @@ else
     echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' >> ~/.zshrc
     echo 'PATH=$PATH:/usr/local/go/bin' >> ~/.zshrc
 fi
+
+cd -
