@@ -5,7 +5,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Usage: $0 [options]"
     echo "Options:"
     echo "  -docker   Install docker"
-    echo "  -u <user> Install user env for user(s) (comma separated)"
+    echo "  -u=<user> Install user env for user plus root"
     echo "  -go       Install golang"
     echo "  -jvm      Install jvm"
     echo "  -dotnet   Install dotnet"
@@ -33,20 +33,21 @@ if [[ " ${args[@]} " =~ " -docker " ]]; then
     fi
 fi
 
-# Check arg -u for users, splited by comma
-if [[ " ${args[@]} " =~ " -u " ]]; then
-    echo "Installing user env..."
-fi
-
 echo "Installing user env for root..."
 sudo -H -u root bash ./user-env.sh root
 
-if [[ " ${args[@]} " =~ " -u " ]]; then
-  IFS=',' read -r -a users <<< "${args[@]#*-u }"  
-  for user in "${users[@]}"; do 
-    # Remove leading and trailing whitespace
-    user=$(echo "$user" | sed 's/^[ \t]*//;s/[ \t]*$//')
-    echo "Installing user env for $user..."
+# Check arg -u for user env
+if [[ " ${args[@]} " =~ " -u=" ]]; then
+    # Get the index of -u
+    index=$(echo "${args[@]}" | grep -oP '(?<=-u=)[^ ]*')
+    # Get the user name
+    user=${index#*=}
+    
+    # Check if user is empty
+    if [ -z "$user" ]; then
+        echo "User name is empty"
+        exit 1
+    fi
     
     # Check if user exists
     if ! id "$user" &>/dev/null; then
@@ -59,7 +60,8 @@ if [[ " ${args[@]} " =~ " -u " ]]; then
         if ! getent group docker > /dev/null; then
             # Create docker group
             sudo groupadd docker
-            # Add user to docker group            
+            # Add user to docker group        
+            sudo usermod -aG docker $user    
         fi                        
     fi 
   
