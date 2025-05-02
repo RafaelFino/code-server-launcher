@@ -42,16 +42,16 @@ if [[ " ${args[@]} " =~ " -u=" ]]; then
     index=$(echo "${args[@]}" | grep -oP '(?<=-u=)[^ ]*')
     # Get the user name
     user=${index#*=}
-    
+
     # Check if user is empty
     if [ -z "$user" ]; then
         echo "User name is empty"
         exit 1
     fi
-    
+
     # Check if user exists
     if ! id "$user" &>/dev/null; then
-      echo "User $user does not exist. Creating user..."
+        echo "User $user does not exist. Creating user..."
         sudo adduser $user
         sudo usermod -aG sudo $user
         # Add user to sudo group
@@ -64,9 +64,8 @@ if [[ " ${args[@]} " =~ " -u=" ]]; then
             sudo usermod -aG docker $user    
         fi                        
     fi 
-  
+
     sudo -H -u $user bash ./user-env.sh $user
-  done
 fi
 
 # Check arg -go for golang
