@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"encoding/json"
@@ -16,8 +15,8 @@ import (
 
 var (
 	oauthConf = &oauth2.Config{
-		ClientID:     os.Getenv("CLIENT_ID"),
-		ClientSecret: os.Getenv("CLIENT_SECRET"),
+		ClientID:     "Ov23libexupt9yDqNXEP",                     //os.Getenv(),
+		ClientSecret: "2a700d4fe53424d22756a2d3d1044166a4dbe85d", //os.Getenv("2a700d4fe53424d22756a2d3d1044166a4dbe85d"),
 		Scopes:       []string{"user:email"},
 		Endpoint:     github.Endpoint,
 		RedirectURL:  "https://code.learnops.duckdns.org/callback",
