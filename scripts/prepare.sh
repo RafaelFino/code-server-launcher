@@ -1,6 +1,19 @@
 #!/bin/bash
 
+# check if script run to show help only
+if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+    echo "Usage: $0 [options]"
+    echo "Options:"
+    echo "  -docker   Install docker"
+    echo "  -u <user> Install user env for user(s) (comma separated)"
+    echo "  -go       Install golang"
+    echo "  -jvm      Install jvm"
+    echo "  -dotnet   Install dotnet"
+    exit 0
+fi
+
 args=("$@")
+
 # Check if the script is being run with root privileges
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root"
@@ -13,24 +26,6 @@ bash ./base.sh
 if [[ " ${args[@]} " =~ " -docker " ]]; then
     echo "Installing docker..."
     bash ./docker.sh
-fi
-
-# Check arg -go for golang
-if [[ " ${args[@]} " =~ " -go " ]]; then
-    echo "Installing golang..."
-    bash ./golang.sh
-fi
-
-# Check arg -jvm for jvm
-if [[ " ${args[@]} " =~ " -jvm " ]]; then
-    echo "Installing jvm..."
-    bash ./jvm.sh
-fi
-
-# Check arg -dotnet for dotnet
-if [[ " ${args[@]} " =~ " -dotnet " ]]; then
-    echo "Installing dotnet..."
-    bash ./dotnet.sh
 fi
 
 # Check arg -u for users, splited by comma
@@ -65,4 +60,22 @@ if [[ " ${args[@]} " =~ " -u " ]]; then
   
     sudo -H -u $user bash ./user-env.sh $user
   done
+fi
+
+# Check arg -go for golang
+if [[ " ${args[@]} " =~ " -go " ]]; then
+    echo "Installing golang..."
+    bash ./golang.sh
+fi
+
+# Check arg -jvm for jvm
+if [[ " ${args[@]} " =~ " -jvm " ]]; then
+    echo "Installing jvm..."
+    bash ./jvm.sh
+fi
+
+# Check arg -dotnet for dotnet
+if [[ " ${args[@]} " =~ " -dotnet " ]]; then
+    echo "Installing dotnet..."
+    bash ./dotnet.sh
 fi

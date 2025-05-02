@@ -2,4 +2,4 @@
 
 # jvm
 curl -s https://get.sdkman.io | bash
-bash -c 'source ~/.zshrc; sdk install java'
+zsh -c 'source ~/.zshrc; sdk install java'
