@@ -51,7 +51,8 @@ if [[ " ${args[@]} " =~ " -u " ]]; then
     # Check if user exists
     if ! id "$user" &>/dev/null; then
       echo "User $user does not exist. Creating user..."
-        sudo adduser --disabled-password --gecos "" $user
+        sudo adduser $user
+        sudo usermod -aG sudo $user
         # Add user to sudo group
         sudo usermod -aG sudo $user
         # Check if docker group exists
