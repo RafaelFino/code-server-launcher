@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# check if sdkman is installed
+if [ ! -d "$HOME/.sdkman" ]; then
+    echo "Installing SDKMAN..."
+    curl -s https://get.sdkman.io | bash
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+fi
+
 # jvm
-curl -s https://get.sdkman.io | bash
-zsh -c 'source ~/.zshrc; sdk install java'
+sdk install java'

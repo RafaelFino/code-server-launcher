@@ -24,8 +24,13 @@ bash ./base.sh
 
 # Check arg -docker for docker
 if [[ " ${args[@]} " =~ " -docker " ]]; then
-    echo "Installing docker..."
-    bash ./docker.sh
+    # check if docker is installed
+    if command -v docker &> /dev/null; then
+        echo "Docker is already installed"
+    else
+        echo "Installing docker..."
+        bash ./docker.sh
+    fi
 fi
 
 # Check arg -u for users, splited by comma
@@ -64,18 +69,33 @@ fi
 
 # Check arg -go for golang
 if [[ " ${args[@]} " =~ " -go " ]]; then
-    echo "Installing golang..."
-    bash ./golang.sh
+    # check if golang is installed
+    if command -v go &> /dev/null; then
+        echo "Golang is already installed"
+    else
+        echo "Installing golang..."
+        bash ./golang.sh
+    fi
 fi
 
 # Check arg -jvm for jvm
 if [[ " ${args[@]} " =~ " -jvm " ]]; then
-    echo "Installing jvm..."
-    bash ./jvm.sh
+    # check if jvm is installed
+    if command -v sdk &> /dev/null; then
+        echo "JVM is already installed"
+    else
+        echo "Installing jvm..."
+        bash ./jvm.sh
+    fi
 fi
 
 # Check arg -dotnet for dotnet
 if [[ " ${args[@]} " =~ " -dotnet " ]]; then
-    echo "Installing dotnet..."
-    bash ./dotnet.sh
+    # check if dotnet is installed
+    if command -v dotnet &> /dev/null; then
+        echo "Dotnet is already installed"
+    else
+        echo "Installing dotnet..."
+        bash ./dotnet.sh
+    fi    
 fi
