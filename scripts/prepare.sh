@@ -9,11 +9,6 @@ fi
 
 bash ./base.sh
 
-# Check arguments
-if [ ${#args[@]} -eq 0 ]; then
-    exit 0
-fi
-
 # Check arg -docker for docker
 if [[ " ${args[@]} " =~ " -docker " ]]; then
     echo "Installing docker..."
