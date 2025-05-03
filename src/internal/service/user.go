@@ -1,9 +1,9 @@
 package service
 
 import (
-	"code-server-launcher/internal/code-server-laucher/config"
-	"code-server-launcher/internal/code-server-laucher/domain"
-	"code-server-launcher/internal/code-server-laucher/logger"
+	"code-server-launcher/internal/config"
+	"code-server-launcher/internal/domain"
+	"code-server-launcher/internal/logger"
 	"encoding/json"
 	"io"
 	"net/http"
