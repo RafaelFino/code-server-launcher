@@ -15,7 +15,6 @@ import (
 
 var (
 	oauthConf = &oauth2.Config{
-
 		Scopes:      []string{"user:email"},
 		Endpoint:    github.Endpoint,
 		RedirectURL: "https://code.learnops.duckdns.org/callback",
