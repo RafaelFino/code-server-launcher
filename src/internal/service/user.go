@@ -71,6 +71,9 @@ func (s *UserService) LoadUsers() (*domain.UserList, error) {
 			s.log.Debug("User %s public key: %s", user.Login, pubKey)
 		}
 	}
+
+	s.log.Info("Users loaded from JSON file: %s -> %v", s.userListUrl, users.Users)
+	return users, nil
 }
 
 func (s *UserService) getPubKeyFromGithub(user string) (string, error) {
@@ -82,7 +85,7 @@ func (s *UserService) getPubKeyFromGithub(user string) (string, error) {
 
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		s.log.Error("Failed to get public key from github: %s, status code: %d", s.githubUrl+user, resp.StatusCode)
+		s.log.Error("Failed to get public key from github: %s - %s, status code: %d", s.githubUrl, user, resp.StatusCode)
 		return "", err
 	}
 

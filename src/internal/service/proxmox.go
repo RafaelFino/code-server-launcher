@@ -6,7 +6,6 @@ import (
 	"code-server-launcher/internal/logger"
 	"context"
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -16,14 +15,14 @@ import (
 
 type ProxmoxService struct {
 	config.ProxmoxConfig
-	p.g           *logger.Logger
+	log           *logger.Logger
 	apiURL        string
 	proxmoxClient *proxmox.Client
 }
 
 func NewLXCService(cfg *config.ProxmoxConfig) *ProxmoxService {
 	ret := &ProxmoxService{
-		p.g:           logger.NewLogger("ProxmoxService"),
+		log:           logger.NewLogger("ProxmoxService"),
 		apiURL:        "https://" + cfg.Host + "/api2/json",
 		ProxmoxConfig: *cfg,
 	}
@@ -74,12 +73,12 @@ func (p *ProxmoxService) Run(user *domain.User) error {
 		return err
 	}
 
-	if status == VmStatusRunning {
+	if status == domain.VmStatusRunning {
 		p.log.Info("LXC container already exists for user: %d", user.ID)
 		return nil
 	}
 
-	if status == VmStatusStopped || status == VmStatusPaused || status == VmStatusSuspended {
+	if status == domain.VmStatusStopped || status == domain.VmStatusPaused || status == domain.VmStatusSuspended {
 		p.log.Info("LXC container already exists for user %d and is stopped", user.ID)
 		p.log.Info("Starting LXC container for user: %d", user.ID)
 		err := p.TurnOnContainer(user)
@@ -159,7 +158,7 @@ func (p *ProxmoxService) GetInfo(user *domain.User) (*domain.VmInfo, error) {
 		return nil, err
 	}
 
-	vm, err := parseVmInfo(ret)
+	vm, err := domain.ParseVmInfo(ret)
 
 	if err != nil {
 		p.log.Error("Failed to parse VM list: %v", err)
@@ -174,17 +173,18 @@ func (p *ProxmoxService) CreateContainer(user *domain.User) error {
 
 	ctx := context.Background()
 
-	templateRef := proxmox.NewVmRef(proxmox.GuestID(l.TemplateID))
-	templateRef.SetNode(l.Node)
+	templateRef := proxmox.NewVmRef(proxmox.GuestID(p.TemplateID))
+	templateRef.SetNode(p.Node)
 
-	newContainerName := fmt.Sprintf("codeserver-%s", user.Name)
+	newContainerName := fmt.Sprintf("codeserver-%s", user.Login)
+	guestId := (proxmox.GuestID)(user.ID)
 
 	target := proxmox.CloneLxcTarget{
 		Full: &proxmox.CloneLxcFull{
-			Node:    (proxmox.NodeName)(l.Node),
-			ID:      (*proxmox.GuestID)(&user.ID),
+			Node:    (proxmox.NodeName)(p.Node),
+			ID:      &guestId,
 			Name:    &newContainerName,
-			Storage: &l.StorageName,
+			Storage: &p.StorageName,
 		},
 	}
 
@@ -200,24 +200,24 @@ func (p *ProxmoxService) CreateContainer(user *domain.User) error {
 		return fmt.Errorf("failed to clone LXC container: targetRef is nil")
 	}
 
-	p.cConfig, err := proxmox.NewConfigLxcFromApi(ctx, targetRef, p.proxmoxClient)
+	cfg, err := proxmox.NewConfigLxcFromApi(ctx, targetRef, p.proxmoxClient)
 	if err != nil {
 		p.log.Error("Failed to get LXC config: %v", err)
 		return err
 	}
 
-	p.cConfig.Memory = p.MemSize * 1024
-	p.cConfig.CPUUnits = p.CPUCores
-	p.cConfig.Networks = proxmox.QemuDevices{
+	cfg.Memory = p.MemSize
+	cfg.Cores = p.CPUCores
+	cfg.Networks = proxmox.QemuDevices{
 		0: {
 			"name":     "eth0",
 			"bridge":   p.NetworkInterface,
 			"firewall": true,
-			"ip":       fmt.Sprintf(l.BaseIP, user.ID),
+			"ip":       fmt.Sprintf(p.BaseIP, user.ID),
 		},
 	}
 
-	err = lxcConfig.UpdateConfig(ctx, targetRef, p.proxmoxClient)
+	err = cfg.UpdateConfig(ctx, targetRef, p.proxmoxClient)
 
 	if err != nil {
 		p.log.Error("Failed to update LXC config: %v", err)
@@ -240,7 +240,7 @@ func (p *ProxmoxService) HibernateVm(user *domain.User) error {
 		return err
 	}
 
-	p.log.Info("LXC container hibernated successfully for user: %d -> Status:", user.ID, status)
+	p.log.Info("LXC container hibernated successfully for user: %d -> Status: %s", user.ID, status)
 
 	return nil
 }
@@ -258,7 +258,7 @@ func (p *ProxmoxService) StopContainer(user *domain.User) error {
 		return err
 	}
 
-	p.log.Info("LXC container stopped successfully for user: %d -> Status:", user.ID, status)
+	p.log.Info("LXC container stopped successfully for user: %d -> Status: %s", user.ID, status)
 
 	return nil
 }
@@ -276,7 +276,7 @@ func (p *ProxmoxService) TurnOnContainer(user *domain.User) error {
 		return err
 	}
 
-	p.log.Info("LXC container started successfully for user: %d -> Status:", user.ID, status)
+	p.log.Info("LXC container started successfully for user: %d -> Status: %s", user.ID, status)
 
 	time.Sleep(5 * time.Second)
 	for i := 0; i < p.TimetoStart; i++ {
@@ -295,19 +295,4 @@ func (p *ProxmoxService) TurnOnContainer(user *domain.User) error {
 	}
 
 	return fmt.Errorf("LXC container did not start in time for user: %d", user.ID)
-}
-
-func parseVmInfo(raw map[string]interface{}) (*domain.VmInfo, error) {
-	data, err := json.Marshal(raw)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal VM list: %v", err)
-	}
-
-	var vmInfo domain.VmInfo
-	err = json.Unmarshal(data, &vmInfo)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal VM info: %v", err)
-	}
-
-	return &vmInfo, nil
 }

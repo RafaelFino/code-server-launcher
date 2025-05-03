@@ -42,7 +42,7 @@ type VmInfo struct {
 	MaxDisk uint64   `json:"maxdisk"`
 }
 
-func parseVmInfo(raw map[string]interface{}) (*VmInfo, error) {
+func ParseVmInfo(raw map[string]interface{}) (*VmInfo, error) {
 	data, err := json.Marshal(raw)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal VM list: %v", err)
