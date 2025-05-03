@@ -6,13 +6,23 @@ import (
 )
 
 type Config struct {
-	OAuthConfig   *oauth2.Config `json:"oauth_config"`
-	ProxmoxConfig *ProxmoxConfig `json:"proxmox_config"`
-	GithubUrl     string         `json:"github_url"`
-	UserListUrl   string         `json:"user_list_url"`
+	Github      *Github  `json:"github"`
+	Proxmox     *Proxmox `json:"proxmox"`
+	Server      *Server  `json:"server"`
+	UserListUrl string   `json:"user_list_url"`
 }
 
-type ProxmoxConfig struct {
+type Github struct {
+	oauth2.Config
+	GithubUrl string `json:"github_url"`
+}
+
+type Server struct {
+	Host string `json:"host"`
+	Port int    `json:"port"`
+}
+
+type Proxmox struct {
 	Host             string `json:"host"`
 	Node             string `json:"node"`
 	Username         string `json:"username"`
@@ -27,8 +37,32 @@ type ProxmoxConfig struct {
 	TimetoStart      int    `json:"time_to_start"`
 }
 
-func NewProxmoxConfig(host, node, username, password string, vmTemplateID, memSize, cpuCores int, storageName string, storageSize int, baseIP string, networkInterface string, timeToStart int) *ProxmoxConfig {
-	return &ProxmoxConfig{
+func NewGithubAuth(clientID, clientSecret, redirectURL, githubUrl string) *GithubAuthConfig {
+	return &Github{
+		GithubUrl: githubUrl,
+		Config: oauth2.Config{
+			Scopes:       []string{"user:email"},
+			Endpoint:     github.Endpoint,
+			ClientID:     clientID,
+			ClientSecret: clientSecret,
+			RedirectURL:  redirectURL,
+		},
+	}
+}
+
+func (g *Github) GetOAuth() *oauth2.Config {
+	return &g.Config
+}
+
+func NewServer(host string, port int) *Server {
+	return &Server{
+		Host: host,
+		Port: port,
+	}
+}
+
+func NewProxmox(host, node, username, password string, vmTemplateID, memSize, cpuCores int, storageName string, storageSize int, baseIP string, networkInterface string, timeToStart int) *Proxmox {
+	return &Proxmox{
 		Host:             host,
 		Node:             node,
 		Username:         username,
@@ -44,21 +78,11 @@ func NewProxmoxConfig(host, node, username, password string, vmTemplateID, memSi
 	}
 }
 
-func NewOAuthConfig(clientID, clientSecret, redirectURL string) *oauth2.Config {
-	return &oauth2.Config{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
-		RedirectURL:  redirectURL,
-		Scopes:       []string{"user:email"},
-		Endpoint:     github.Endpoint,
-	}
-}
-
-func NewConfig(oauthConfig *oauth2.Config, proxmoxConfig *ProxmoxConfig, githubUrl string, userListUrl string) *Config {
+func NewConfig(githubConfig *Github, proxmoxConfig *Proxmox, serverConfig *Server, githubUrl string, userListUrl string) *Config {
 	return &Config{
-		OAuthConfig:   oauthConfig,
-		ProxmoxConfig: proxmoxConfig,
-		GithubUrl:     githubUrl,
-		UserListUrl:   userListUrl,
+		Github:      githubConfig,
+		Proxmox:     proxmoxConfig,
+		Server:      serverConfig,
+		UserListUrl: userListUrl,
 	}
 }

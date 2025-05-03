@@ -20,7 +20,7 @@ type ProxmoxService struct {
 	proxmoxClient *proxmox.Client
 }
 
-func NewLXCService(cfg *config.ProxmoxConfig) *ProxmoxService {
+func NewProxmoxService(cfg *config.ProxmoxConfig) *ProxmoxService {
 	ret := &ProxmoxService{
 		log:           logger.NewLogger("ProxmoxService"),
 		apiURL:        "https://" + cfg.Host + "/api2/json",
