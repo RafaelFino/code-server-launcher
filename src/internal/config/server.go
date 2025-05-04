@@ -5,24 +5,24 @@ import (
 	"golang.org/x/oauth2/github"
 )
 
-type Config struct {
-	Github      *Github  `json:"github"`
-	Proxmox     *Proxmox `json:"proxmox"`
-	Server      *Server  `json:"server"`
-	UserListUrl string   `json:"user_list_url"`
+type AppConfig struct {
+	Github      *GithubConfig  `json:"github"`
+	Proxmox     *ProxmoxConfig `json:"proxmox"`
+	Server      *ServerConfig  `json:"server"`
+	UserListUrl string         `json:"user_list_url"`
 }
 
-type Github struct {
+type GithubConfig struct {
 	oauth2.Config
 	GithubUrl string `json:"github_url"`
 }
 
-type Server struct {
+type ServerConfig struct {
 	Host string `json:"host"`
 	Port int    `json:"port"`
 }
 
-type Proxmox struct {
+type ProxmoxConfig struct {
 	Host             string `json:"host"`
 	Node             string `json:"node"`
 	Username         string `json:"username"`
@@ -37,8 +37,8 @@ type Proxmox struct {
 	TimetoStart      int    `json:"time_to_start"`
 }
 
-func NewGithubAuth(clientID, clientSecret, redirectURL, githubUrl string) *GithubAuthConfig {
-	return &Github{
+func NewGithubAuth(clientID, clientSecret, redirectURL, githubUrl string) *GithubConfig {
+	return &GithubConfig{
 		GithubUrl: githubUrl,
 		Config: oauth2.Config{
 			Scopes:       []string{"user:email"},
@@ -50,19 +50,19 @@ func NewGithubAuth(clientID, clientSecret, redirectURL, githubUrl string) *Githu
 	}
 }
 
-func (g *Github) GetOAuth() *oauth2.Config {
+func (g *GithubConfig) GetOAuth() *oauth2.Config {
 	return &g.Config
 }
 
-func NewServer(host string, port int) *Server {
-	return &Server{
+func NewServer(host string, port int) *ServerConfig {
+	return &ServerConfig{
 		Host: host,
 		Port: port,
 	}
 }
 
-func NewProxmox(host, node, username, password string, vmTemplateID, memSize, cpuCores int, storageName string, storageSize int, baseIP string, networkInterface string, timeToStart int) *Proxmox {
-	return &Proxmox{
+func NewProxmox(host, node, username, password string, vmTemplateID, memSize, cpuCores int, storageName string, storageSize int, baseIP string, networkInterface string, timeToStart int) *ProxmoxConfig {
+	return &ProxmoxConfig{
 		Host:             host,
 		Node:             node,
 		Username:         username,
@@ -78,8 +78,8 @@ func NewProxmox(host, node, username, password string, vmTemplateID, memSize, cp
 	}
 }
 
-func NewConfig(githubConfig *Github, proxmoxConfig *Proxmox, serverConfig *Server, githubUrl string, userListUrl string) *Config {
-	return &Config{
+func NewConfig(githubConfig *GithubConfig, proxmoxConfig *ProxmoxConfig, serverConfig *ServerConfig, githubUrl string, userListUrl string) *AppConfig {
+	return &AppConfig{
 		Github:      githubConfig,
 		Proxmox:     proxmoxConfig,
 		Server:      serverConfig,

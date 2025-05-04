@@ -15,9 +15,9 @@ type UserService struct {
 	log         *logger.Logger
 }
 
-func NewUserService(config *config.Config) *UserService {
+func NewUserService(config *config.AppConfig) *UserService {
 	return &UserService{
-		githubUrl:   config.GithubUrl,
+		githubUrl:   config.Github.GithubUrl,
 		userListUrl: config.UserListUrl,
 		log:         logger.NewLogger("UserService"),
 	}

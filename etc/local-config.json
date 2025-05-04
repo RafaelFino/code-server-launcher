@@ -1,0 +1,24 @@
+{
+    "github": {
+      "client_id": "Ov23libexupt9yDqNXEP",
+      "client_secret": "2a700d4fe53424d22756a2d3d1044166a4dbe85d",
+      "redirect_url": "http://localhost:8080/oauth/callback",
+    },
+    "proxmox": {
+      "host": "https://proxmox.example.com:8006",
+      "node": "pve",
+      "username": "root@pam",
+      "password": "your-proxmox-password",
+      "template_id": 9000,
+      "memory_size": 2048,
+      "cpu_cores": 2,
+      "storage_name": "nvme-local",
+      "storage_size": 8,
+      "network_interface": "vmbr0",
+      "base_ip": "192.168.100.",
+      "time_to_start": 15
+    },
+    "github_url": "https://github.com/your-org/your-repo",
+    "user_list_url": "https://yourapi.com/users.json"
+  }
+}
