@@ -1,7 +1,6 @@
 {
     "github": {
-      "client_id": "Ov23libexupt9yDqNXEP",
-      "client_secret": "2a700d4fe53424d22756a2d3d1044166a4dbe85d",
+
       "redirect_url": "http://localhost:8080/oauth/callback",
     },
     "proxmox": {
