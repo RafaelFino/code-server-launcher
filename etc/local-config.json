@@ -1,7 +1,6 @@
 {
     "github": {
-
-      "redirect_url": "http://localhost:8080/oauth/callback",
+      "redirect_url": "http://localhost:8080/oauth/callback"
     },
     "proxmox": {
       "host": "https://proxmox.example.com:8006",

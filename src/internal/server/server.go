@@ -121,6 +121,8 @@ func (s *Server) handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	//Create a new VM for the user
 
+	//create Caddy new Entry for the user
+
 	//redirect to the VM page
 }
 
