@@ -119,8 +119,9 @@ func (s *Server) handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, &http.Cookie{Name: "user", Value: user.Login})
 
-	target := fmt.Sprintf("https://%s.learnops.duckdns.org", user.Login)
-	http.Redirect(w, r, target, http.StatusSeeOther)
+	//Create a new VM for the user
+
+	//redirect to the VM page
 }
 
 func (s *Server) authUser(user string) bool {

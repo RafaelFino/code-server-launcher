@@ -10,6 +10,7 @@ type AppConfig struct {
 	Proxmox     *ProxmoxConfig `json:"proxmox"`
 	Server      *ServerConfig  `json:"server"`
 	UserListUrl string         `json:"user_list_url"`
+	Caddy       *CaddyConfig   `json:"caddy"`
 }
 
 type GithubConfig struct {
@@ -20,6 +21,13 @@ type GithubConfig struct {
 type ServerConfig struct {
 	Host string `json:"host"`
 	Port int    `json:"port"`
+}
+
+type CaddyConfig struct {
+	ServerConfig
+	TlsCert        string `json:"tls_cert"`
+	BaseURL        string `json:"base_url"`
+	BaseInternalIP string `json:"base_internal_ip"`
 }
 
 type ProxmoxConfig struct {
